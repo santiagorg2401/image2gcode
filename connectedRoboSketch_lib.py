@@ -17,12 +17,14 @@ def initSerial(pNum): # Initializes the serial connection
                         timeout = None) # Open up serial line to plotter
     return ser
 
-def sendFullGcode(gcode, ser): # Sends a full set of G-Code (as opposed to one line)
-    for line in gcode:
+def sendFullGcode(ser): # Sends a full set of G-Code (as opposed to one line)
+	fp = open('generated_gcode.txt', 'r')
+    while line:
         ser.write(line.encode())
         ret = ser.readline()
         if(ret != b'ok\r\n'):
             print("Error, ok not receieved, instead receieved %s", ret)
+	fp.close()
 
 def closeSerial(ser): # Closes the serial connection
     ser.close()
@@ -80,32 +82,46 @@ def scaleDimensions(width, height, scale_fact_x, scale_fact_y): # Scales width a
     return width, height
 
 def generateGcode(cnt_scaled, width, height):
-    gcode = ""
+	f = open("generated_gcode.txt", mode="w", encoding="ascii")
+	
+	maxX = 0
+	minX = 0
+	maxY = 0
+	minY = 0
 
     # Go home with pen up
-    gcode = gcode + "M3\n"
-    gcode = gcode + "S0\n"
-    gcode = gcode + "G0 X0 Y0\n"
+    f.write("M3\n")
+    f.write("S0\n")
+    f.write("G0 X0 Y0\n")
+	
+	for i in range(0, len(cnt_scaled)):
+		if(cnt_scaled[i][0][0][0]-(width/2) > maxX):
+			maxX = cnt_scaled[i][0][0][0]-(width/2)
+		if(cnt_scaled[i][0][0][0]-(width/2) < minX):
+			minX = cnt_scaled[i][0][0][0]-(width/2)
+		if(cnt_scaled[i][0][0][1]-(height/2) > maxY):
+			maxY = cnt_scaled[i][0][0][1]-(height/2)
+		if(cnt_scaled[i][0][0][1]-(height/2) < minY):
+			minY = cnt_scaled[i][0][0][1]-(height/2)
 
     # Set movement speed
-    gcode = gcode + "F2000\n"
+    f.write("F2000\n")
 
     # Convert vectors (contours) to G-Code
     for i in range(0, len(cnt_scaled)):
         # Move quickly to starting point
-        gcode = gcode + "G0 X" + str(cnt_scaled[i][0][0][0]-(width/2)) + " Y" + str(cnt_scaled[i][0][0][1]-(height/2)) + "\n"
+        f.write("G0 X" + str(cnt_scaled[i][0][0][0]-(width/2)) + " Y" + str(cnt_scaled[i][0][0][1]-(height/2)) + "\n")
         # Lower the pen
-        gcode = gcode + "S65\n"
+        f.write("S65\n")
         # Move at the given movement speed through each point with pen down
         for j in range(0, len(cnt_scaled[i])):
             # Move to next point in list
-            gcode = gcode + "G1 X"+ str(cnt_scaled[i][j][0][0]-(width/2)) + " Y" + str(cnt_scaled[i][j][0][1]-(height/2)) + "\n"
+            f.write("G1 X"+ str(cnt_scaled[i][j][0][0]-(width/2)) + " Y" + str(cnt_scaled[i][j][0][1]-(height/2)) + "\n")
         # Raise pen
-        gcode = gcode + "S0\n"
+        f.write("S0\n")
 
     # Go back to home position
-    gcode = gcode + "S0\n"
-    gcode = gcode + "G0 X0 Y0\n"
-    gcode = gcode + "M5\n"
-
-    return gcode
+	f.write("S0\n")
+    f.write("G0 X0 Y0\n")
+    f.write("M5\n")
+	f.close()

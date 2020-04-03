@@ -25,8 +25,8 @@ cnt_scaled = scaleVectors(contours, scale_fact_x, scale_fact_y) # scales vectors
 
 width, height = scaleDimensions(width, height, scale_fact_x, scale_fact_y) # scales width and height of original image
 
-gcode = generateGcode(cnt_scaled, width, height) # generate the G-Code instructions for the plotter to accept
+generateGcode(cnt_scaled, width, height) # generate the G-Code instructions for the plotter to accept
 
-sendFullGcode(gcode, ser) # send G-Code instructions over serial
+sendFullGcode(ser) # send G-Code instructions over serial
 
 closeSerial(ser) # close serial connection
