@@ -4,29 +4,33 @@ import cv2 as cv2
 import numpy as np
 import serial
 import time
+import os
 from connectedRoboSketch_lib import initSerial, sendFullGcode, closeSerial, getImage, getImageScaleFact, edgeDetect, vectorizeEdges, scaleVectors, scaleDimensions, generateGcode
 
 MAX_WIDTH = 100
 MAX_HEIGHT = 150
 
-pNum = '/dev/ttyUSB0'
+os.system("hciconfig hci0 piscan")
 
-ser = initSerial(pNum) # initialize serial connection
+while(True):
+    pNum = '/dev/ttyUSB0'
 
-img, height, width = getImage() # get input image, will be changed for Bluetooth
+    ser = initSerial(pNum) # initialize serial connection
 
-scale_fact_x, scale_fact_y = getImageScaleFact(img) # scale factor for input image
+    img, height, width = getImage() # get input image, will be changed for Bluetooth
 
-edges = edgeDetect(img) # peform canny edge detection on the image
+    scale_fact_x, scale_fact_y = getImageScaleFact(img) # scale factor for input image
 
-contours = vectorizeEdges(edges) # vectorization of edges and cleanup of vectors
+    edges = edgeDetect(img) # peform canny edge detection on the image
 
-cnt_scaled = scaleVectors(contours, scale_fact_x, scale_fact_y) # scales vectors by whichever scaling factor is larger
+    contours = vectorizeEdges(edges) # vectorization of edges and cleanup of vectors
 
-width, height = scaleDimensions(width, height, scale_fact_x, scale_fact_y) # scales width and height of original image
+    cnt_scaled = scaleVectors(contours, scale_fact_x, scale_fact_y) # scales vectors by whichever scaling factor is larger
 
-generateGcode(cnt_scaled, width, height) # generate the G-Code instructions for the plotter to accept
+    width, height = scaleDimensions(width, height, scale_fact_x, scale_fact_y) # scales width and height of original image
 
-sendFullGcode(ser) # send G-Code instructions over serial
+    generateGcode(cnt_scaled, width, height) # generate the G-Code instructions for the plotter to accept
 
-closeSerial(ser) # close serial connection
+    sendFullGcode(ser) # send G-Code instructions over serial
+
+    closeSerial(ser) # close serial connection

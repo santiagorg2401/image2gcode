@@ -1,0 +1,1 @@
+python3 /home/pi/Desktop/Python_Code/connectedRoboSketch_master.py > log.txt

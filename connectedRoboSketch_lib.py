@@ -88,7 +88,7 @@ def edgeDetect(img): # Performs canny edge detection on the image
 
 def vectorizeEdges(edges): # Performs the vectorization and cleanup of the vectors
     ret, thresh = cv.threshold(edges, 127, 255, 0)
-    _, contours0, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours0, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = [cv.approxPolyDP(cnt, 3, True) for cnt in contours0] # Reduce points
     i = 0
     while i < len(contours): # Further reduce points by removing single point lines
@@ -121,7 +121,7 @@ def scaleDimensions(width, height, scale_fact_x, scale_fact_y): # Scales width a
 
 def generateGcode(cnt_scaled, width, height):
     f = open("generated_gcode.txt", mode="w", encoding="ascii")
-	
+    
     maxX = 0
     minX = 0
     maxY = 0
