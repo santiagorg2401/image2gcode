@@ -74,9 +74,7 @@ def getImage(): # Will eventually be replaced by bluetooth functions
     height, width  = img.shape[:2]
     return img, height, width # return the dimensions as well
 
-def getImageScaleFact(img): # Gets the scale factor for the image
-    MAX_WIDTH = 100
-    MAX_HEIGHT = 150
+def getImageScaleFact(img, MAX_WIDTH, MAX_HEIGHT): # Gets the scale factor for the image
     height, width  = img.shape[:2] # Grab the dimensions of the image
     scale_fact_x = width/MAX_WIDTH # Determine how much wider the image is than max width
     scale_fact_y = height/MAX_HEIGHT # Determine how much taller the image is than max height

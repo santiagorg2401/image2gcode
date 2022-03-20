@@ -19,7 +19,7 @@ while(True):
 
     img, height, width = getImage() # get input image, will be changed for Bluetooth
 
-    scale_fact_x, scale_fact_y = getImageScaleFact(img) # scale factor for input image
+    scale_fact_x, scale_fact_y = getImageScaleFact(img, MAX_WIDTH, MAX_HEIGHT) # scale factor for input image
 
     edges = edgeDetect(img) # peform canny edge detection on the image
 
